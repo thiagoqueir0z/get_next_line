@@ -6,35 +6,27 @@
 /*   By: thiferre <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 10:14:44 by thiferre          #+#    #+#             */
-/*   Updated: 2025/11/04 13:32:51 by thiferre         ###   ########.fr       */
+/*   Updated: 2025/11/05 15:26:51 by thiferre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
+
+# include <unistd.h>
+# include <stdlib.h>
 
 # ifndef BUFFER_SIZE
-# define BUFFER_SIZE
+#  define BUFFER_SIZE 4096
 # endif
 
-#include <unistd.h>
-#include <stdlib.h>
-
-typedef struct s_list
-{
-	int		fd;
-	char		*content;
-	struct s_list	*next;
-}	t_list;
-
-int	ft_strlen(const char *str);
-t_list	*ft_lst_get_last(t_list *stash);
-int	found_newline(t_list *stash);
-void	free_stash(t_list *stash);
-int	ft_strlen(const char *str);
-t_list	*ft_lst_get_last(t_list *stash);
-int	found_newline(t_list *stash);
-void	free_stash(t_list *stash);
+//main
 char	*get_next_line(int fd);
+//utils
+char	*ft_strchr(const char *s, int c);
+char	*ft_strjoin(char const *s1, char const *s2);
+int		ft_strlen(const char *s);
+char	*ft_substr(char const *s, unsigned int start, size_t, len);
+char	*ft_strdup(const char *s);
 
-# endif
+#endif

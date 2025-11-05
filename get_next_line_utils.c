@@ -6,81 +6,46 @@
 /*   By: thiferre <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 10:13:12 by thiferre          #+#    #+#             */
-/*   Updated: 2025/11/04 15:34:08 by thiferre         ###   ########.fr       */
+/*   Updated: 2025/11/05 15:55:58 by thiferre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-// Looks for a newline character in the given linked list.
-
-int	found_newline(t_list *stash)
+char	*ft_strjoin(char *s1, char *s2)
 {
-	int	i;
-	t_list	current;
+	size_t	i;
+	size_t	j;
+	char	*str;
 
-	if (stash == NULL)
-		return (0);
-	
-	current = stash;
-	while (current)
+	if (!s1)
 	{
-		i = 0;
-		while (current->content[i])
-		{
-			if (current->content[i] == '\0')
-				return (1);
-			i++;
-		}
-		current = current->next;
+		s1 = (char *)malloc(1 * sizeof(char));
+		s1[0] = '\0';
 	}
-	return (0);
-}
-
-// Returns a pointer to the last node in stash
-
-t_list	*ft_lst_get_last(t_list *stash)
-{
-	t_list	*current;
-
-	current = stash;
-
-	if (current == NULL)
+	if (!s1 || !s2)
 		return (NULL);
-	while (current->next != NULL)
-		current = current->next;
-	return(current);	
+	str = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (!str)
+		return (NULL);
+	i = -1;
+	j = 0;
+	if (s1)
+		while (s1[++i])
+			str[i] = s1[i];
+	while (s2[j])
+		str[i++] = s2[j++];
+	str[i] = '\0';
+	free(s1);
+	return (str);
 }
 
-// Frees the entire stash
-
-void	free_stash(t_list *stash)
-{
-	t_list *next;
-	while (stash)
-	{
-		next = stash->next;
-		if (stash->content)
-			free(stash->content);
-		free(stash);
-		stash = next;
-	}
-}
-
-
-
-
-
-// Returns length of a string
-
-int	ft_strlen (const char *str)
+int	ft_strlen(const char *str)
 {
 	int	len;
 
 	len = 0;
 	while (str[len])
 		len++;
-	return (i);
+	return (len);
 }
-
-

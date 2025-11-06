@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thiferre <thiferre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/04 10:13:12 by thiferre          #+#    #+#             */
-/*   Updated: 2025/11/06 15:33:39 by thqueiroz        ###   ########.fr       */
+/*   Created: 2025/11/06 14:38:42 by thiferre          #+#    #+#             */
+/*   Updated: 2025/11/06 15:33:21 by thqueiroz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 int	ft_strlen(const char *str)
 {

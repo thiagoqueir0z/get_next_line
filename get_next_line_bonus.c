@@ -1,36 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thiferre <thiferre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/04 10:22:51 by thiferre          #+#    #+#             */
-/*   Updated: 2025/11/06 18:10:36 by thqueiroz        ###   ########.fr       */
+/*   Created: 2025/11/06 14:34:02 by thiferre          #+#    #+#             */
+/*   Updated: 2025/11/06 16:31:05 by thiferre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*get_next_line(int fd)
 {
 	char		*line;
-	static char	*text;
+	static char	*text[4096];
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (0);
-	text = ft_read_file(fd, text);
-	if (!text)
-		return (NULL);
-	line = ft_find_line(text);
-	text = ft_leftover(text);
+	if (!text[fd])
+	{
+		text[fd] = malloc(1);
+		if (!text[fd])
+			return (NULL);
+		text[fd][0] = '\0';
+	}
+	text[fd] = ft_read_file(fd, text[fd]);
+	line = ft_find_line(text[fd]);
+	text[fd] = ft_leftover(text[fd]);
 	return (line);
 }
 
 char	*ft_read_file(int fd, char *text)
 {
-	int		bytes_read;
 	char	*buff;
+	int		bytes_read;
 
 	buff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buff)
@@ -39,7 +44,7 @@ char	*ft_read_file(int fd, char *text)
 	while (bytes_read != 0 && !ft_strchr(text, '\n'))
 	{
 		bytes_read = read(fd, buff, BUFFER_SIZE);
-		if (bytes_read == 1)
+		if (bytes_read == -1)
 			return (free(buff), free(text), NULL);
 		if (bytes_read == 0)
 			break ;
@@ -50,7 +55,7 @@ char	*ft_read_file(int fd, char *text)
 	return (text);
 }
 
-char	*ft_find_line(char *text)
+char	*ft_find_line(char	*text)
 {
 	int		i;
 	char	*line;
@@ -83,7 +88,7 @@ char	*ft_leftover(char *text)
 
 	i = 0;
 	while (text[i] && text[i] != '\n')
-		i++;
+		++i;
 	if (!text[i])
 		return (free(text), NULL);
 	left = (char *)malloc(sizeof(char) * (ft_strlen(text) - i + 1));
@@ -94,6 +99,6 @@ char	*ft_leftover(char *text)
 	while (text[i])
 		left[j++] = text[i++];
 	left[j] = '\0';
-	free (text);
+	free(text);
 	return (left);
 }

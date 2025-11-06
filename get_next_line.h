@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thiferre <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: thiferre <thiferre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 10:14:44 by thiferre          #+#    #+#             */
-/*   Updated: 2025/11/05 15:26:51 by thiferre         ###   ########.fr       */
+/*   Updated: 2025/11/06 11:41:38 by thqueiroz        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,12 @@
 
 //main
 char	*get_next_line(int fd);
+char	*ft_read_file(int fd, char *text);
+char	*ft_find_line(char *text);
+char	*leftover(char *text);
 //utils
-char	*ft_strchr(const char *s, int c);
-char	*ft_strjoin(char const *s1, char const *s2);
 int		ft_strlen(const char *s);
-char	*ft_substr(char const *s, unsigned int start, size_t, len);
-char	*ft_strdup(const char *s);
+char	*ft_strchr(char *s, int c);
+char	*ft_strjoin(char *s1, char *s2);
 
 #endif

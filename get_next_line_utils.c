@@ -6,7 +6,7 @@
 /*   By: thiferre <thiferre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 10:13:12 by thiferre          #+#    #+#             */
-/*   Updated: 2025/11/06 15:33:39 by thqueiroz        ###   ########.fr       */
+/*   Updated: 2025/11/07 14:56:03 by thiferre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ int	ft_strlen(const char *str)
 {
 	int	len;
 
+	if (!str)
+		return (0);
 	len = 0;
 	while (str[len])
 		len++;
@@ -36,25 +38,26 @@ char	*ft_strchr(char *s, int c)
 
 char	*ft_strjoin(char *s1, char *s2)
 {
+	char	*str;
 	int		i;
 	int		j;
-	char	*str;
 
+	if (!s2)
+		return (NULL);
 	if (!s1)
 	{
-		s1 = (char *)malloc(1 * sizeof(char));
+		s1 = malloc(1);
+		if (!s1)
+			return (NULL);
 		s1[0] = '\0';
 	}
-	if (!s1 || !s2)
-		return (NULL);
-	str = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	str = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!str)
-		return (NULL);
+		return (free(s1), NULL);
 	i = -1;
+	while (s1[++i])
+		str[i] = s1[i];
 	j = 0;
-	if (s1)
-		while (s1[++i])
-			str[i] = s1[i];
 	while (s2[j])
 		str[i++] = s2[j++];
 	str[i] = '\0';

@@ -1,0 +1,10 @@
+Esta é a Linha 1: uma frase de comprimento médio para preencher o buffer.
+Linha 2, curta.
+3: Este arquivo tem de ser robusto para a avaliação do 42.
+4: Quatro.
+5: Cinco linhas, para garantir que o BUFFER_SIZE se comporte bem.
+6: A sexta linha é grande. É bem longa mesmo, mais do que 42 bytes, para forçar várias chamadas de read() se o buffer for pequeno, o que é fundamental.
+7: Sete.
+8: Oito, outra linha curta.
+9: Linha Nove: O penúltimo é sempre um teste importante.
+10: Esta é a Décima e ÚLTIMA LINHA. Ela não tem o caractere de quebra de linha no final.

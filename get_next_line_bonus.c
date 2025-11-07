@@ -6,7 +6,7 @@
 /*   By: thiferre <thiferre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/06 14:34:02 by thiferre          #+#    #+#             */
-/*   Updated: 2025/11/06 16:31:05 by thiferre         ###   ########.fr       */
+/*   Updated: 2025/11/07 12:16:00 by thiferre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ char	*get_next_line(int fd)
 	char		*line;
 	static char	*text[4096];
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (0);
+	if (fd < 0 || fd >= 4096 || BUFFER_SIZE <= 0)
+		return (NULL);
 	if (!text[fd])
 	{
 		text[fd] = malloc(1);
@@ -27,7 +27,15 @@ char	*get_next_line(int fd)
 		text[fd][0] = '\0';
 	}
 	text[fd] = ft_read_file(fd, text[fd]);
+	if (!text[fd])
+		return (NULL);
 	line = ft_find_line(text[fd]);
+	if (!line)
+	{
+		free (text[fd]);
+		text[fd] = NULL;
+		return (NULL);
+	}
 	text[fd] = ft_leftover(text[fd]);
 	return (line);
 }
@@ -50,6 +58,11 @@ char	*ft_read_file(int fd, char *text)
 			break ;
 		buff[bytes_read] = '\0';
 		text = ft_strjoin(text, buff);
+		if (!text)
+		{
+			free(buff);
+			return (NULL);
+		}
 	}
 	free(buff);
 	return (text);

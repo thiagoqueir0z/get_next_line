@@ -6,7 +6,7 @@
 /*   By: thiferre <thiferre@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 10:22:51 by thiferre          #+#    #+#             */
-/*   Updated: 2025/11/06 18:10:36 by thqueiroz        ###   ########.fr       */
+/*   Updated: 2025/11/07 13:13:57 by thiferre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ char	*get_next_line(int fd)
 	static char	*text;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (0);
+		return (NULL);
 	text = ft_read_file(fd, text);
 	if (!text)
 		return (NULL);
@@ -39,7 +39,7 @@ char	*ft_read_file(int fd, char *text)
 	while (bytes_read != 0 && !ft_strchr(text, '\n'))
 	{
 		bytes_read = read(fd, buff, BUFFER_SIZE);
-		if (bytes_read == 1)
+		if (bytes_read == -1)
 			return (free(buff), free(text), NULL);
 		if (bytes_read == 0)
 			break ;

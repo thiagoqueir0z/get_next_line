@@ -1,3 +1,0 @@
-Linha 1 do teste.
-Linha 2.
-Linha 3 (final sem newline).

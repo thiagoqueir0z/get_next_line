@@ -1,93 +1,95 @@
 #!/bin/bash
 
-# Define os arquivos fonte C para o bônus
+# Define the C source files for the bonus
 SRCS="get_next_line_bonus.c get_next_line_utils.c main_bonus.c"
 EXEC="gnl_bonus_test"
 
-# Arquivos de teste
+# Test files
 FILE1="test_boundary.txt"
-FILE2="file_exato.txt"
+FILE2="file_exact.txt"
 FILE3="test_ten_lines.txt"
 
-# --- Funções de Ajuda ---
+# --- Helper Functions ---
 
+# Function to compile and run the test with a specific BUFFER_SIZE
 compile_and_run() {
-    local b_size=$1
-    local test_target=$2
-    
-    echo -e "\n=================================================================="
-    echo -e "⚙️  COMPILANDO: BUFFER_SIZE = $b_size"
-    echo -e "=================================================================="
+	local b_size=$1
+	local test_target=$2
+	
+	echo -e "\n=================================================================="
+	echo -e "⚙️  COMPILING: BUFFER_SIZE = $b_size"
+	echo -e "=================================================================="
 
-    # Compilação manual
-    gcc -Wall -Wextra -Werror -g -D BUFFER_SIZE=$b_size $SRCS -o $EXEC
+	# Manual compilation
+	gcc -Wall -Wextra -Werror -g -D BUFFER_SIZE=$b_size $SRCS -o $EXEC
 
-    if [ $? -ne 0 ]; then
-        echo -e "\n❌ ERRO DE COMPILAÇÃO para BUFFER_SIZE = $b_size. Verifique 'main_bonus.c', 'get_next_line_bonus.c' e 'get_next_line_utils.c'"
-        exit 1
-    fi
-    
-    echo -e "\n>>> EXECUTANDO TESTE: $test_target | FDs: $FILE1, $FILE2, $FILE3 <<<\n"
-    
-    # Executa o driver com múltiplos arquivos
-    ./$EXEC $FILE1 $FILE2 $FILE3
-    
-    echo -e "\n--- FIM DO TESTE: $test_target ---"
+	if [ $? -ne 0 ]; then
+		echo -e "\n❌ COMPILATION ERROR for BUFFER_SIZE = $b_size. Check 'main_bonus.c', 'get_next_line_bonus.c', and 'get_next_line_utils.c'"
+		exit 1
+	fi
+	
+	echo -e "\n>>> EXECUTING TEST: $test_target | FDs: $FILE1, $FILE2, $FILE3 <<<\n"
+	
+	# Execute the driver with multiple files
+	./$EXEC
+	
+	echo -e "\n--- END OF TEST: $test_target ---"
 }
 
+# Function to run the memory check with Valgrind
 run_valgrind_bonus() {
-    local b_size=$1
+	local b_size=$1
 
-    echo -e "\n=================================================================="
-    echo -e "🧠 TESTE DE MEMÓRIA (VALGRIND BÔNUS) | BUFFER_SIZE = $b_size"
-    echo -e "=================================================================="
-    
-    # 1. Recompila
-    gcc -Wall -Wextra -Werror -g -D BUFFER_SIZE=$b_size $SRCS -o $EXEC
-    
-    if [ $? -ne 0 ]; then
-        echo "❌ ERRO DE COMPILAÇÃO para Valgrind Bônus."
-        exit 1
-    fi
-    
-    # 2. Executa Valgrind no teste intercalado
-    echo -e "\nIniciando Valgrind na leitura intercalada de 3 arquivos..."
-    valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --errors-for-leak-kinds=all --error-exitcode=1 ./$EXEC $FILE1 $FILE2 $FILE3
-    
-    if [ $? -eq 0 ]; then
-        echo -e "\n✅ VALGRIND BÔNUS: Não foram encontrados leaks ou erros de memória."
-    else
-        echo -e "\n❌ VALGRIND BÔNUS: FALHA! Foram encontrados leaks ou erros de memória."
-    fi
-    echo -e "\n--- FIM DO RELATÓRIO VALGRIND ---"
+	echo -e "\n=================================================================="
+	echo -e "🧠 MEMORY TEST (VALGRIND BONUS) | BUFFER_SIZE = $b_size"
+	echo -e "=================================================================="
+	
+	# 1. Recompile
+	gcc -Wall -Wextra -Werror -g -D BUFFER_SIZE=$b_size $SRCS -o $EXEC
+	
+	if [ $? -ne 0 ]; then
+		echo "❌ COMPILATION ERROR for Valgrind Bonus."
+		exit 1
+	fi
+	
+	# 2. Execute Valgrind on the intercalated test
+	echo -e "\nStarting Valgrind on intercalated read of 3 files..."
+	valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --errors-for-leak-kinds=all --error-exitcode=1 ./$EXEC
+	
+	if [ $? -eq 0 ]; then
+		echo -e "\n✅ VALGRIND BONUS: No memory leaks or errors found."
+	else
+		echo -e "\n❌ VALGRIND BONUS: FAILURE! Memory leaks or errors were found."
+	fi
+	echo -e "\n--- END OF VALGRIND REPORT ---"
 }
 
-# --- Preparação e Limpeza ---
+# --- Setup and Cleanup ---
 rm -f $EXEC $FILE1 $FILE2 $FILE3
-echo "Arquivos temporários e executável antigo limpos."
+echo "Temporary files and old executable cleaned."
 
-# 1. Cria o arquivo de estresse (Longas, Curtas, Vazias)
-# Conteúdo do test_boundary.txt (Linhas Longas)
-echo -e "Linha Curta\nA\nB.\n$(head -c 2000 < /dev/zero | tr '\0' 'C')\nQuase curta.\n\nLinha vazia acima.\n\nEsta é a linha final sem quebra de linha no final." > $FILE1
-echo "Arquivo '$FILE1' (Limites) criado."
+# 1. Create the stress file (Long, Short, Empty Lines)
+# Contents of test_boundary.txt (Boundary Lines)
+echo -e "Short Line\nA\nB.\n$(head -c 2000 < /dev/zero | tr '\0' 'C')\nAlmost short.\n\nEmpty line above.\n\nThis is the final line with no newline at the end." > $FILE1
+echo "File '$FILE1' (Boundary) created."
 
-# 2. Cria o arquivo de teste exato (20 caracteres)
-# Conteúdo do file_exato.txt (Buffer Exato)
-echo -e "0123456789ABCDEFGHIJ\nTeste Exato." > $FILE2
-echo "Arquivo '$FILE2' (Exato) criado."
+# 2. Create the exact test file (20 characters)
+# Contents of file_exact.txt (Exact Buffer)
+echo -e "0123456789ABCDEFGHIJ\nExact Test." > $FILE2
+echo "File '$FILE2' (Exact) created."
 
-# 3. Cria o arquivo de teste padrão (10 Linhas)
-# Conteúdo do test_ten_lines.txt (10 Linhas Variadas)
-echo -e "Esta é a Linha 1.\nLinha 2, curta.\n3: Este arquivo tem de ser robusto.\n4: Quatro.\n5: Cinco.\n6: A sexta linha é grande. É bem longa mesmo, mais do que 42 bytes, para forçar várias chamadas de read() se o buffer for pequeno.\n7: Sete.\n8: Oito, outra linha curta.\n9: Linha Nove.\n10: Esta é a Décima e ÚLTIMA LINHA. Sem quebra de linha no final." > $FILE3
-echo "Arquivo '$FILE3' (10 Linhas) criado."
+# 3. Create the standard test file (10 Lines)
+# Contents of test_ten_lines.txt (10 Varied Lines)
+echo -e "This is Line 1.\nLine 2, short.\n3: This file must be robust.\n4: Four.\n5: Five.\n6: The sixth line is big. It is very long, more than 42 bytes, to force multiple read() calls if the buffer is small.\n7: Seven.\n8: Eight, another short line.\n9: Line Nine.\n10: This is the Tenth and LAST LINE. No newline at the end." > $FILE3
+echo "File '$FILE3' (10 Lines) created."
 
 
-# --- MATRIZ DE TESTES BÔNUS ---
+# --- BONUS TEST MATRIX ---
 
-# 1. Teste de Leitura Intercalada com diferentes BUFFER_SIZE
-compile_and_run 4096 "Buffer Grande"
-compile_and_run 8 "Buffer Pequeno"
-compile_and_run 1 "Buffer Crítico"
+# 1. Intercalated Read Test with different BUFFER_SIZE
+compile_and_run 4096 "Large Buffer"
+compile_and_run 8 "Small Buffer"
+compile_and_run 1 "Critical Buffer"
 
-# 2. Teste de Valgrind em modo crítico (BUFFER_SIZE=1)
+# 2. Valgrind Test in Critical Mode (BUFFER_SIZE=1)
 run_valgrind_bonus 1

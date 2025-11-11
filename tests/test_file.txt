@@ -1,10 +1,10 @@
-Esta é a Linha 1: uma frase de comprimento médio para preencher o buffer.
-Linha 2, curta.
-3: Este arquivo tem de ser robusto para a avaliação do 42.
-4: Quatro.
-5: Cinco linhas, para garantir que o BUFFER_SIZE se comporte bem.
-6: A sexta linha é grande. É bem longa mesmo, mais do que 42 bytes, para forçar várias chamadas de read() se o buffer for pequeno, o que é fundamental.
-7: Sete.
-8: Oito, outra linha curta.
-9: Linha Nove: O penúltimo é sempre um teste importante.
-10: Esta é a Décima e ÚLTIMA LINHA. Ela não tem o caractere de quebra de linha no final.
+This is Line 1: a medium-length sentence to fill the buffer.
+Line 2, short.
+3: This file must be robust for the 42 evaluation.
+4: Four.
+5: Five lines, to ensure that BUFFER_SIZE behaves well.
+6: The sixth line is big. It is very long indeed, more than 42 bytes, to force several read() calls if the buffer is small, which is fundamental.
+7: Seven.
+8: Eight, another short line.
+9: Line Nine: The penultimate is always an important test.
+10: This is the Tenth and LAST LINE. It does not have the newline character at the end.

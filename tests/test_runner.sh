@@ -1,92 +1,94 @@
 #!/bin/bash
 
-# Define os arquivos fonte C (Assumindo que estão na pasta atual)
+# Define the C source files (Assuming they are in the current folder)
 SRCS="get_next_line.c get_next_line_utils.c main.c"
 EXEC="gnl_test"
 
-# --- Funções de Ajuda ---
+# --- Helper Functions ---
 
+# Function to compile and run the test with a specific BUFFER_SIZE
 compile_and_run() {
-    local b_size=$1
-    local test_target=$2
-    local test_file=$3
+	local b_size=$1
+	local test_target=$2
+	local test_file=$3
 
-    echo -e "\n=================================================================="
-    echo -e "⚙️  COMPILANDO: BUFFER_SIZE = $b_size"
-    echo -e "=================================================================="
+	echo -e "\n=================================================================="
+	echo -e "⚙️  COMPILING: BUFFER_SIZE = $b_size"
+	echo -e "=================================================================="
 
-    # Compilação manual com o flag -D BUFFER_SIZE
-    gcc -Wall -Wextra -Werror -g -D BUFFER_SIZE=$b_size $SRCS -o $EXEC
+	# Manual compilation with the -D BUFFER_SIZE flag
+	gcc -Wall -Wextra -Werror -g -D BUFFER_SIZE=$b_size $SRCS -o $EXEC
 
-    if [ $? -ne 0 ]; then
-        echo -e "\n❌ ERRO DE COMPILAÇÃO para BUFFER_SIZE = $b_size"
-        exit 1
-    fi
-    
-    echo -e "\n>>> EXECUTANDO TESTE: $test_target ($test_file) <<<\n"
-    
-    if [ "$test_target" == "STDIN" ]; then
-        echo -e ">>> Por favor, digite algumas linhas (Ctrl+D para terminar):\n"
-        ./$EXEC
-    else
-        ./$EXEC $test_file
-    fi
-    
-    echo -e "\n--- FIM DO TESTE ---"
+	if [ $? -ne 0 ]; then
+		echo -e "\n❌ COMPILATION ERROR for BUFFER_SIZE = $b_size"
+		exit 1
+	fi
+	
+	echo -e "\n>>> EXECUTING TEST: $test_target ($test_file) <<<\n"
+	
+	if [ "$test_target" == "STDIN" ]; then
+		echo -e ">>> Please type some lines (Ctrl+D to finish):\n"
+		./$EXEC
+	else
+		./$EXEC $test_file
+	fi
+	
+	echo -e "\n--- END OF TEST ---"
 }
 
+# Function to run the memory check with Valgrind
 run_valgrind() {
-    local b_size=$1
+	local b_size=$1
 
-    echo -e "\n=================================================================="
-    echo -e "🧠 TESTE DE MEMÓRIA (VALGRIND) | BUFFER_SIZE = $b_size"
-    echo -e "=================================================================="
-    
-    # 1. Recompila com o tamanho crítico 1
-    gcc -Wall -Wextra -Werror -g -D BUFFER_SIZE=$b_size $SRCS -o $EXEC
-    
-    if [ $? -ne 0 ]; then
-        echo "❌ ERRO DE COMPILAÇÃO para Valgrind."
-        exit 1
-    fi
-    
-    # 2. Executa Valgrind no arquivo de estresse
-    valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --errors-for-leak-kinds=all --error-exitcode=1 ./$EXEC test_boundary.txt
-    
-    if [ $? -eq 0 ]; then
-        echo -e "\n✅ VALGRIND: Não foram encontrados leaks ou erros de memória."
-    else
-        echo -e "\n❌ VALGRIND: Falha! Foram encontrados leaks ou erros de memória."
-    fi
-    echo -e "\n--- FIM DO RELATÓRIO VALGRIND ---"
+	echo -e "\n=================================================================="
+	echo -e "🧠 MEMORY TEST (VALGRIND) | BUFFER_SIZE = $b_size"
+	echo -e "=================================================================="
+	
+	# 1. Recompile with the critical size 1
+	gcc -Wall -Wextra -Werror -g -D BUFFER_SIZE=$b_size $SRCS -o $EXEC
+	
+	if [ $? -ne 0 ]; then
+		echo "❌ COMPILATION ERROR for Valgrind."
+		exit 1
+	fi
+	
+	# 2. Execute Valgrind on the stress file
+	valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes --errors-for-leak-kinds=all --error-exitcode=1 ./$EXEC test_boundary.txt
+	
+	if [ $? -eq 0 ]; then
+		echo -e "\n✅ VALGRIND: No memory leaks or errors found."
+	else
+		echo -e "\n❌ VALGRIND: FAILURE! Memory leaks or errors were found."
+	fi
+	echo -e "\n--- END OF VALGRIND REPORT ---"
 }
 
-# --- Preparação e Limpeza ---
-rm -f $EXEC test_boundary.txt file_exato.txt
-echo "Arquivos temporários e executável antigo limpos."
+# --- Setup and Cleanup ---
+rm -f $EXEC test_boundary.txt file_exact.txt
+echo "Temporary files and old executable cleaned."
 
-# 1. Cria o arquivo de estresse de limites (Linhas Longas, Curtas, Vazias)
-echo -e "Linha Curta\nA\nB.\n$(head -c 2000 < /dev/zero | tr '\0' 'C')\nQuase curta.\n\nLinha vazia acima.\n\nEsta é a linha final sem quebra de linha no final." > test_boundary.txt
-echo "Arquivo 'test_boundary.txt' criado."
+# 1. Create the boundary stress file (Long, Short, Empty Lines)
+echo -e "Short Line\nA\nB.\n$(head -c 2000 < /dev/zero | tr '\0' 'C')\nAlmost short.\n\nEmpty line above.\n\nThis is the final line with no newline at the end." > test_boundary.txt
+echo "File 'test_boundary.txt' created."
 
-# 2. Cria o arquivo de teste exato (20 caracteres)
-echo -e "0123456789ABCDEFGHIJ\nTeste Exato." > file_exato.txt
-echo "Arquivo 'file_exato.txt' criado."
+# 2. Create the exact test file (20 characters)
+echo -e "0123456789ABCDEFGHIJ\nExact Test." > file_exact.txt
+echo "File 'file_exact.txt' created."
 
-# --- MATRIZ DE TESTES ---
+# --- TEST MATRIX ---
 
-# A. Testes de Limites (test_boundary.txt)
-compile_and_run 4096 "Buffer Grande" "test_boundary.txt" # Grande
-compile_and_run 8 "Buffer Pequeno" "test_boundary.txt"   # Pequeno
-compile_and_run 1 "Buffer Crítico" "test_boundary.txt"  # Crítico
+# A. Boundary Tests (test_boundary.txt)
+compile_and_run 4096 "Large Buffer" "test_boundary.txt" # Large
+compile_and_run 8 "Small Buffer" "test_boundary.txt"    # Small
+compile_and_run 1 "Critical Buffer" "test_boundary.txt" # Critical
 
-# B. Testes de Intersecção (file_exato.txt)
-compile_and_run 20 "Buffer Exato" "file_exato.txt"    # Exato (20)
-compile_and_run 21 "Buffer +1" "file_exato.txt"       # Buffer +1
-compile_and_run 19 "Buffer -1" "file_exato.txt"      # Buffer -1
+# B. Intersection Tests (file_exact.txt)
+compile_and_run 20 "Exact Buffer" "file_exact.txt"      # Exact (20)
+compile_and_run 21 "Buffer +1" "file_exact.txt"        # Buffer +1
+compile_and_run 19 "Buffer -1" "file_exact.txt"        # Buffer -1
 
-# C. Teste de STDIN (Entrada Padrão)
-compile_and_run 42 "STDIN" "" # Usa 42 como um valor comum para STDIN
+# C. STDIN Test (Standard Input)
+compile_and_run 42 "STDIN" "" # Uses 42 as a common value for STDIN
 
-# D. Teste de Valgrind
+# D. Valgrind Test
 run_valgrind 1
